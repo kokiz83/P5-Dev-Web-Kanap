@@ -16,7 +16,7 @@ function addProducts(data) {
 
     data.forEach(kanap => {
 
-       "kanap", kanap
+        "kanap", kanap
         const { _id, imageUrl, altTxt, name, description } = kanap
         const items = document.getElementById("items")
         const a = document.createElement("a")
@@ -26,8 +26,8 @@ function addProducts(data) {
         const p = addDesciption(description)
 
         items.appendChild(a)
-        a.href = "./product.html?id="+ _id
-        
+        a.href = "./product.html?id=" + _id
+
         a.appendChild(article)
         article.appendChild(image)
         article.appendChild(h3)
