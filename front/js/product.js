@@ -1,13 +1,13 @@
 // récupération de l'url avec id
 const queryString = window.location.href
 const url = new URL(queryString)
-const idUrl = url.searchParams.get("id")
-console.log(idUrl)
+const id = url.searchParams.get("id")
+console.log(id)
 
 
 
 
-fetch(`http://localhost:3000/api/products/${idUrl}`)
+fetch(`http://localhost:3000/api/products/${id}`)
 .then(response => response.json())
 .then(res => addProducts(res))
 
@@ -22,7 +22,7 @@ function addProducts(res) {
     addDesciption(description)
     addColors(colors)
     
-    
+    ajoutProduit(btn)
    
 }
 
@@ -67,51 +67,49 @@ function addColors(colors) {
 
 //------------------------parti recupuration de produit choisi par l'utilisateur----------
 //----------------------------------------------------------------------------------------
-
-
-// selectionner le bouton 
-    let btn = document.getElementById("addToCart")
-// pour envoyer le produit  dans le panier
+let btn = document.getElementById("addToCart")
+function ajoutProduit(btn)
+{
+// selectionner le bouton // pour envoyer le produit  dans le panier
 btn.addEventListener("click", (e) => {
     const color = document.querySelector("#colors").value
     const quantity = document.querySelector("#quantity").value
-    if (color == null || color === "" || quantity == null || quantity == 0) {
-        alert("choisir une couleur et une quantité")
-    } else{
-    // sinont envoie le produit choisie au panier 
+    const produitData = { 
+        id: id,
+        color: color,
+        quantity: +quantity,
+    }
+    if (color == null || color === "" || quantity == null || quantity == 0 || quantity >= 100) {
+        alert("choisir une color et une quantité")
+    }
+    else {
+    let panier = [];
+			let produitStorage = JSON.parse(localStorage.getItem("panier"));
 
-        const produitData = {
+			// verifier si l'id de l'article selectionner est deja dans le panier
             
-            idProduct: idUrl,
-            colorProduct: color,
-            quantityProduct: +quantity,
-        }
-      
+			if (produitStorage != null) panier = panier.concat(produitStorage);
 
-        // le locale storage
-        //utiliser localestorage pour stoker les produit choisi par les client
+			let position = panier.findIndex((item) => {
+				return (
+					item != null &&
+					item.id == id &&
+					item.color == produitData.color
+				);
+			});
+
+			// envoyer l'article dans le localstorage
+			if (position == -1) {
+				panier.push(produitData);
+			} else {
+				panier[position].quantity += produitData.quantity;
+                
+			}
+			localStorage.setItem("panier", JSON.stringify(panier));
+		
+             //    envoyer vers pannier
+        window.location.href = "/front/html/cart.html"   
+        } 
         
-        let produitStorage = JSON.parse(localStorage.getItem("produit"))
-        console.log(produitStorage)
-        // s'il ya déja des produit dans localstorage
-        if (produitStorage) {
-
-            produitStorage.push(produitData)
-            localStorage.setItem("produit", JSON.stringify(produitStorage))
-
-        }
-        // s'il n'y a pas de produit
-        else {
-            produitStorage = []
-            produitStorage.push(produitData)
-            localStorage.setItem("produit", JSON.stringify(produitStorage))
-            
-            
-            
-        }}
-        //    envoyer vers pannier
-    window.location.href = "/front/html/cart.html"
-
-})
-        // si le produit choisi  il a la meme id & color ajoute quantité
-         
+    });}
+    
