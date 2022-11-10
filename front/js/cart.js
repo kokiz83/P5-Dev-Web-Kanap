@@ -8,18 +8,19 @@ function getCart() {
   return produitStorage
 }
 
+let produitStorage = getCart()
+let h1 = document.querySelector("h1")
+console.log(h1)
+let cartOrder = document.getElementsByClassName("cart__order")
+console.log(cartOrder[0])
+let cartPrice = document.getElementsByClassName("cart__price")
 
-
-function addVidePnier() {
-  let produitStorage = getCart()
-
-  if (produitStorage === null) {
-    let h1 = document.querySelector("h1")
-    h1.textContent = "votre panier est vide !!"
-    return
-  }
-} addVidePnier()
-
+if (produitStorage === null || produitStorage.length == 0) {
+  h1.textContent = 'votre panier est vide'
+  cartOrder[0].innerHTML = ""
+  cartPrice[0].innerHTML = ""
+}
+//////??????????????????????????????????????
 
 function creatCart() {
   let produitStorage = getCart()
@@ -52,25 +53,25 @@ function creatCart() {
     divSettings.appendChild(divQuantity)
     divSettings.appendChild(divDelete)
 
-    
-    
+
+
     //recupération du prix &name & image en utilisant l'id du produit
     let produitApi = ""
     fetch("http://localhost:3000/api/products/" + id)
-    .then(function (res) {
-      if (res.ok) {
-        return res.json();
-      }
-    })
-    .then(async function (dataApi) {
-      produitApi = await dataApi
-      
-      // insertion  price & name
-      divDescription.innerHTML = `<h2>${produitApi.name} </h2> <p>${produitApi.price} €</p><p>${color}</p>`
-      image.alt = produitApi.altTxt
-      image.src = produitApi.imageUrl
-    })
-    
+      .then(function (res) {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then(async function (dataApi) {
+        produitApi = await dataApi
+
+        // insertion  price & name
+        divDescription.innerHTML = `<h2>${produitApi.name} </h2> <p>${produitApi.price} €</p><p>${color}</p>`
+        image.alt = produitApi.altTxt
+        image.src = produitApi.imageUrl
+      })
+
     // creé des classe 
     produiselect.dataset.id = id
     produiselect.dataset.color = color
@@ -88,9 +89,12 @@ function creatCart() {
 
     // div Delet
     divDelete.innerHTML = `<p class="deleteItem">Supprimer</p>`
-  } 
+  }
 }
 creatCart()
+
+
+
 
 ///  prcourrir tout les produit dans le panier avec for et chaque fois tu recupe le prix par rapport a son id
 
@@ -98,7 +102,7 @@ async function getProductPrice(id) {
 
   const res = await fetch("http://localhost:3000/api/products/" + id)
   const dataPrice = await res.json()
- 
+
 
   return dataPrice.price
 }
@@ -106,16 +110,16 @@ async function getProductPrice(id) {
 async function calaculePrice() {
   let produitStorage = getCart()
   let totalePrice = 0
- 
+
   for (let i = 0; produitStorage.length; i++) {
     let produit = produitStorage[i]
-    let id = produitStorage[i].id  
-    const infoPrice = await getProductPrice(id)    
-    totalePrice += infoPrice * produit[`quantity`]   
+    let id = produitStorage[i].id
+    const infoPrice = await getProductPrice(id)
+    totalePrice += infoPrice * produit[`quantity`]
     let totalePriceElm = document.querySelector("#totalPrice")
     totalePriceElm.textContent = totalePrice
 
-   
+
   }
 }
 
@@ -130,7 +134,7 @@ function calculTotaleQuantity() {
     qty += +quantity
     let totaleQuantity = document.querySelector("#totalQuantity")
     totaleQuantity.textContent = qty
-   
+
   }
 } calculTotaleQuantity()
 
@@ -168,7 +172,7 @@ function modifQuantity() {
     input.addEventListener("change", (e) => {
       let input = e.target
 
-      if (isNaN(input.value) || input.value <= 0) {
+      if (isNaN(input.value) && input.value <= 0) {
         input.value = 1
       }
       let produitStorage = getCart()
@@ -176,12 +180,165 @@ function modifQuantity() {
       localStorage.setItem("panier", JSON.stringify(produitStorage));
       calculTotaleQuantity()
       calaculePrice()
-
-
     })
 
   }
 } modifQuantity()
+
+
+/****************************formulaire***********************/
+// recuperer les valeurs du formulaire 
+// selectionner les valeurs de formulaire
+
+let form = document.getElementById("cart__order__form")
+
+let orderCommander = document.getElementById("order")
+let firstName = document.getElementById("firstName")
+let firstNameError = document.getElementById("firstNameErrorMsg")
+let lastName = document.getElementById("lastName")
+let lastNameError = document.getElementById("lastNameErrorMsg")
+let city = document.getElementById("city")
+let cityError = document.getElementById("cityErrorMsg")
+let address = document.getElementById("address")
+let addressError = document.getElementById("addressErrorMsg")
+let email = document.getElementById("email")
+let emailError = document.getElementById("emailErrorMsg")
+
+
+// RegExp
+let adresseRegExp = /^[A-zÀ-ú0-9 ,.'\-]+$/
+let nameRegExp = /^[A-zÀ-ú \-]+$/;
+let emailRegExp = /^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$/
+
+//l'utilisateur va saisi une prenom valide
+
+firstName.addEventListener('change', function (e) {
+  let value = e.target.value;
+  if (nameRegExp.test(value)) {
+    firstNameError.innerHTML = '';
+  } else {
+    firstNameError.innerHTML = 'Champ invalide, veuillez vérifier votre prénom.';
+  }
+})
+
+//l'utilisateur va saisi une nom valide
+lastName.addEventListener('change', function (e) {
+  let value = e.target.value;
+  if (nameRegExp.test(value)) {
+    lastNameError.innerHTML = '';
+  } else {
+    lastNameError.innerHTML = 'Champ invalide, veuillez vérifier votre nom.';
+  }
+})
+//l'utilisateur va saisi une adresse valide
+address.addEventListener('change', function (e) {
+  let value = e.target.value;
+  if (adresseRegExp.test(value)) {
+    addressError.innerHTML = '';
+  } else {
+    addressError.innerHTML = 'Champ invalide, veuillez vérifier votre adresse.';
+  }
+})
+//l'utilisateur va saisi une ville valide
+city.addEventListener('change', function (e) {
+  let value = e.target.value;
+  if (nameRegExp.test(value)) {
+    cityError.innerHTML = '';
+  } else {
+    cityError.innerHTML = 'Champ invalide, veuillez vérifier votre ville.';
+  }
+})
+//l'utilisateur va saisi une email valide
+email.addEventListener('change', function (e) {
+  let value = e.target.value;
+  if (emailRegExp.test(value)) {
+    emailError.innerHTML = '';
+  } else {
+    emailError.innerHTML = 'Champ invalide, veuillez vérifier votre mail.';
+  }
+})
+
+
+//l'utilisateur va rempli tous les champs obligatoires
+orderCommander.addEventListener(("click"), (e) => {
+  e.preventDefault()
+  // recupe valeur 
+  if
+    (firstName.validity.valueMissing || lastName.validity.valueMissing || city.validity.valueMissing,
+    address.validity.valueMissing || email.validity.valueMissing) {
+    alert("Vous devez renseigner vos coordonnées pour passer la commande !");
+    e.preventDefault()
+  } else {
+
+    recupProductID()
+  }
+})
+
+function recupProductID() {
+
+  let productId = []
+  for (let p = 0; p < produitStorage.length; p++) {
+    productId.push(produitStorage[p].id)
+    console.log(typeof(produitStorage[p].id))
+  }
+
+  console.log(typeof(arrproductId))
+  let contact = {
+    firstName: firstName.value,
+    lastName: lastName.value,
+    address: address.value,
+    city: city.value,
+    email: email.value
+  }
+console.log(typeof(contact))
+  localStorage.setItem("contact", JSON.stringify(contact));
+  localStorage.setItem("productId", JSON.stringify(productId))
+  let order = {
+    contact: {
+      firstName: firstName.value,
+      lastName: lastName.value,
+      address: address.value,
+      city: city.value,
+      email: email.value
+    },
+    productId:productId
+  }
+  console.log(typeof(productId))
+  console.log(typeof(firstName.value))
+  console.log(order)
+
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify(order)
+  })
+    .then((response) => response.json())
+
+    .then((data) => console.log(data))
+
+} recupProductID()
+console.log(req.body)
+/**
+ *
+ * Expects request to contain:
+ * contact: {
+ *   firstName: string,
+ *   lastName: string,
+ *   address: string,
+ *   city: string,
+ *   email: string
+ * }
+ * products: [string] <-- array of product _id
+ *
+ */
+
+
+
+
+
 
 
 
