@@ -1,5 +1,4 @@
 "use strict"
-
 function getCart() {
   let produitStorage = [];
   if (localStorage.getItem("panier") != null) {
@@ -14,11 +13,13 @@ console.log(h1)
 let cartOrder = document.getElementsByClassName("cart__order")
 console.log(cartOrder[0])
 let cartPrice = document.getElementsByClassName("cart__price")
-
+// si panier vide 
 if (produitStorage === null || produitStorage.length == 0) {
   h1.textContent = 'votre panier est vide'
   cartOrder[0].innerHTML = ""
   cartPrice[0].innerHTML = ""
+} else{
+
 }
 //////??????????????????????????????????????
 
@@ -93,20 +94,15 @@ function creatCart() {
 }
 creatCart()
 
-
-
-
-///  prcourrir tout les produit dans le panier avec for et chaque fois tu recupe le prix par rapport a son id
+///  récupèrer le prix de chaque produit pa rapport a son id
 
 async function getProductPrice(id) {
 
   const res = await fetch("http://localhost:3000/api/products/" + id)
   const dataPrice = await res.json()
-
-
   return dataPrice.price
 }
-
+// calculer le prix totale 
 async function calaculePrice() {
   let produitStorage = getCart()
   let totalePrice = 0
@@ -118,11 +114,8 @@ async function calaculePrice() {
     totalePrice += infoPrice * produit[`quantity`]
     let totalePriceElm = document.querySelector("#totalPrice")
     totalePriceElm.textContent = totalePrice
-
-
   }
 }
-
 calaculePrice()
 
 // calcule  totale quantity 
@@ -137,9 +130,6 @@ function calculTotaleQuantity() {
 
   }
 } calculTotaleQuantity()
-
-//****************************************************************************************************** */
-
 // pour pouvoir supprimer l'article du panier et ajuster le prix
 function suppProduit() {
   let produitStorage = getCart()
@@ -156,7 +146,6 @@ function suppProduit() {
       calculTotaleQuantity()
       calaculePrice()
     })
-
   }
 }
 suppProduit()
@@ -181,7 +170,6 @@ function modifQuantity() {
       calculTotaleQuantity()
       calaculePrice()
     })
-
   }
 } modifQuantity()
 
@@ -191,7 +179,7 @@ function modifQuantity() {
 // selectionner les valeurs de formulaire
 
 let form = document.getElementById("cart__order__form")
-
+let input = document.querySelector("input")
 let orderCommander = document.getElementById("order")
 let firstName = document.getElementById("firstName")
 let firstNameError = document.getElementById("firstNameErrorMsg")
@@ -259,71 +247,73 @@ email.addEventListener('change', function (e) {
 })
 
 
-//l'utilisateur va rempli tous les champs obligatoires
 orderCommander.addEventListener(("click"), (e) => {
   e.preventDefault()
-  // recupe valeur 
-  if
-    (firstName.validity.valueMissing || lastName.validity.valueMissing || city.validity.valueMissing,
-    address.validity.valueMissing || email.validity.valueMissing) {
-    alert("Vous devez renseigner vos coordonnées pour passer la commande !");
-    e.preventDefault()
-  } else {
+ 
+  //l'utilisateur doit rempli tous les champs obligatoires
+  if (firstName.value === "" || lastName.value === "" || address.value === "" || city.value === "" || email.value === "") {
+  
+    alert("merci de remplire vos coordonnées afin de poursuivre!");
+    e.preventDefault();
+}else if(emailRegExp.test(email.value) == false
+ || nameRegExp.test(firstName.value) == false
+ || adresseRegExp.test(address.value) == false 
+|| nameRegExp.test(lastName.value) == false
+|| nameRegExp.test(city.value) == false){
+  alert("merci de Vérifiez vos coordonnées pour passer la commande !");
+}else{
+  envoieProducts()
+}
 
-    recupProductID()
-  }
+
+
 })
-
-function recupProductID() {
-
+// si l'utilisateur est bien remplie tous les champs et tous ils sont valider confirmer la commande
+function envoieProducts(){ 
   let productId = []
-  for (let p = 0; p < produitStorage.length; p++) {
-    productId.push(produitStorage[p].id)
-    console.log(typeof(produitStorage[p].id))
-  }
-
-  console.log(typeof(arrproductId))
-  let contact = {
-    firstName: firstName.value,
-    lastName: lastName.value,
-    address: address.value,
-    city: city.value,
-    email: email.value
-  }
+for (let p = 0; p < produitStorage.length; p++) {
+  productId.push(produitStorage[p].id)
+}
+let contact = {
+  firstName: firstName.value,
+  lastName: lastName.value,
+  address: address.value,
+  city: city.value,
+  email: email.value
+}
 console.log(typeof(contact))
-  localStorage.setItem("contact", JSON.stringify(contact));
-  localStorage.setItem("productId", JSON.stringify(productId))
-  let order = {
-    contact: {
-      firstName: firstName.value,
-      lastName: lastName.value,
-      address: address.value,
-      city: city.value,
-      email: email.value
-    },
-    productId:productId
-  }
-  console.log(typeof(productId))
-  console.log(typeof(firstName.value))
-  console.log(order)
+localStorage.setItem("contact", JSON.stringify(contact));
+localStorage.setItem("productId", JSON.stringify(productId))
+let order = {
+  contact,
+  products:productId
+}
 
-  fetch("http://localhost:3000/api/products/order", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json"
-    },
-    body: JSON.stringify(order)
+fetch("http://localhost:3000/api/products/order", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  body: JSON.stringify(order)
+})
+  .then((response) => response.json())
+ 
+  .then((data) => {
+    let orderId = data.orderId
+document.location.href = "/front/html/confirmation.html?orderId=" + `${data.orderId}` 
+localStorage.clear()
+
   })
-    .then((response) => response.json())
+}
+		
+  
 
-    .then((data) => console.log(data))
+  
 
-} recupProductID()
-console.log(req.body)
-/**
- *
- * Expects request to contain:
+  /**
+   *
+   * Expects request to contain:
  * contact: {
  *   firstName: string,
  *   lastName: string,

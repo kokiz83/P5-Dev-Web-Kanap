@@ -2,17 +2,11 @@
 const queryString = window.location.href
 const url = new URL(queryString)
 const id = url.searchParams.get("id")
-console.log(id)
-
-
-
-
+// récuperer les produits avec leur identité id
 fetch(`http://localhost:3000/api/products/${id}`)
 .then(response => response.json())
 .then(res => addProducts(res))
-
-
-
+// afichier les produits
 function addProducts(res) {
     const { id, price, name, description, colors, imageUrl, altTxt } = res
     console.log(res)
@@ -25,36 +19,28 @@ function addProducts(res) {
     ajoutProduit(btn)
    
 }
-
-
 function addImg(imageUrl, altTxt) {
     const item = document.querySelector(".item__img")
     const img = document.createElement("img")
     img.src = imageUrl
     img.alt = altTxt
     item.appendChild(img)
-
-
 }
 function addtiTle(name) {
     const title = document.querySelector("h1")
     title.textContent = name
-
 }
 function addDesciption(description) {
     const p = document.getElementById("description")
     p.textContent = description
-
 }
 function addPrice(price) {
     const span = document.querySelector("span")
     span.textContent = price
-   
-
+// fonction pour choisir les couleur
 }
 function addColors(colors) {
     const s = document.querySelector("select")
-
     const option1 = new Option(colors[0], colors[0])
     s[s.length] = option1
     const option2 = new Option(colors[1], colors[1])
@@ -67,18 +53,20 @@ function addColors(colors) {
 
 //------------------------parti recupuration de produit choisi par l'utilisateur----------
 //----------------------------------------------------------------------------------------
+// selectionner le bouton // pour envoyer le produit  dans le panier
 let btn = document.getElementById("addToCart")
 function ajoutProduit(btn)
 {
-// selectionner le bouton // pour envoyer le produit  dans le panier
 btn.addEventListener("click", (e) => {
     const color = document.querySelector("#colors").value
     const quantity = document.querySelector("#quantity").value
+    // constante de produit à récupérer dans le localstorage
     const produitData = { 
         id: id,
         color: color,
         quantity: +quantity,
     }
+    // vérifier si les champs de color et quantité et remplie
     if (color == null || color === "" || quantity == null || quantity == 0 || quantity >= 100) {
         alert("choisir une color et une quantité")
     }
@@ -87,7 +75,7 @@ btn.addEventListener("click", (e) => {
 			let produitStorage = JSON.parse(localStorage.getItem("panier"));
 
 			// verifier si l'id de l'article selectionner est deja dans le panier
-            
+            // si avec la meme couleur en rajoute le quantité sinon en rajout un autr produit 
 			if (produitStorage != null) panier = panier.concat(produitStorage);
 
 			let position = panier.findIndex((item) => {
