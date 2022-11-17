@@ -2,7 +2,7 @@
 const queryString = window.location.href
 const url = new URL(queryString)
 const id = url.searchParams.get("id")
-// récuperer les produits avec leur identité id
+// récuperer les produits avec leur identité id avec la méthode Get
 fetch(`http://localhost:3000/api/products/${id}`)
 .then(response => response.json())
 .then(res => addProducts(res))
@@ -15,9 +15,7 @@ function addProducts(res) {
     addPrice(price)
     addDesciption(description)
     addColors(colors)
-    
-    ajoutProduit(btn)
-   
+    ajoutProduit(btn)   
 }
 function addImg(imageUrl, altTxt) {
     const item = document.querySelector(".item__img")
@@ -37,8 +35,10 @@ function addDesciption(description) {
 function addPrice(price) {
     const span = document.querySelector("span")
     span.textContent = price
-// fonction pour choisir les couleur
 }
+
+
+// fonction pour choisir les color
 function addColors(colors) {
     const s = document.querySelector("select")
     const option1 = new Option(colors[0], colors[0])
@@ -68,14 +68,15 @@ btn.addEventListener("click", (e) => {
     }
     // vérifier si les champs de color et quantité et remplie
     if (color == null || color === "" || quantity == null || quantity == 0 || quantity >= 100) {
-        alert("choisir une color et une quantité")
+        alert("'Merci de choisir une couleur ET  une quantité comprise entre 1 et 100'")
+
     }
     else {
+        
+         // verifier si l'id de l'article selectionner est deja dans le panier
+       // si avec la meme couleur en rajoute le quantité sinon en rajout un autr produit 
     let panier = [];
 			let produitStorage = JSON.parse(localStorage.getItem("panier"));
-
-			// verifier si l'id de l'article selectionner est deja dans le panier
-            // si avec la meme couleur en rajoute le quantité sinon en rajout un autr produit 
 			if (produitStorage != null) panier = panier.concat(produitStorage);
 
 			let position = panier.findIndex((item) => {
@@ -83,8 +84,8 @@ btn.addEventListener("click", (e) => {
 					item != null &&
 					item.id == id &&
 					item.color == produitData.color
-				);
-			});
+                    );
+                });
 
 			// envoyer l'article dans le localstorage
 			if (position == -1) {

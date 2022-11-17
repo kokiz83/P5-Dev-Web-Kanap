@@ -8,7 +8,7 @@ function addProducts(data) {
     // const altTxt = data[0].altTxt
     //const name =data[0].name
     // const description = data[0].description
-    //fonction pour afichier les  tout les produit en utilusant forEach
+    //fonction pour crée et afichier tout les produit en utilusant la méthode forEach
     data.forEach(kanap => {
         "kanap", kanap
         const { _id, imageUrl, altTxt, name, description } = kanap
@@ -51,6 +51,7 @@ function addDesciption(description) {
 
     return p
 }
+
 
 
 

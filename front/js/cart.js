@@ -1,4 +1,4 @@
-"use strict"
+
 function getCart() {
   let produitStorage = [];
   if (localStorage.getItem("panier") != null) {
@@ -21,7 +21,6 @@ if (produitStorage === null || produitStorage.length == 0) {
 } else{
 
 }
-//////??????????????????????????????????????
 
 function creatCart() {
   let produitStorage = getCart()
@@ -30,8 +29,6 @@ function creatCart() {
     let color = produitStorage[i].color
     let id = produitStorage[i].id
     let quantity = produitStorage[i].quantity
-
-
 
     let section = document.querySelector("#cart__items")
     let produiselect = document.createElement("article")
@@ -102,21 +99,26 @@ async function getProductPrice(id) {
   const dataPrice = await res.json()
   return dataPrice.price
 }
+
+
 // calculer le prix totale 
 async function calaculePrice() {
   let produitStorage = getCart()
+  console.log(produitStorage)
   let totalePrice = 0
 
-  for (let i = 0; produitStorage.length; i++) {
+  for (let i = 0; i<produitStorage.length; i++) {
     let produit = produitStorage[i]
-    let id = produitStorage[i].id
+    let id = produitStorage[i]?.id
     const infoPrice = await getProductPrice(id)
+    console.log(infoPrice)
     totalePrice += infoPrice * produit[`quantity`]
-    let totalePriceElm = document.querySelector("#totalPrice")
-    totalePriceElm.textContent = totalePrice
   }
+  let totalePriceElm = document.querySelector("#totalPrice")
+  totalePriceElm.textContent = totalePrice
 }
 calaculePrice()
+
 
 // calcule  totale quantity 
 function calculTotaleQuantity() {
@@ -124,12 +126,13 @@ function calculTotaleQuantity() {
   let qty = 0
   for (let i = 0; i < produitStorage.length; i++) {
     let quantity = produitStorage[i].quantity
-    qty += +quantity
-    let totaleQuantity = document.querySelector("#totalQuantity")
-    totaleQuantity.textContent = qty
-
+    qty += +quantity 
   }
-} calculTotaleQuantity()
+  let totaleQuantity = document.querySelector("#totalQuantity")
+  totaleQuantity.textContent = qty
+} 
+calculTotaleQuantity()
+
 // pour pouvoir supprimer l'article du panier et ajuster le prix
 function suppProduit() {
   let produitStorage = getCart()
@@ -138,6 +141,7 @@ function suppProduit() {
   for (let l = 0; l < deleteItem.length; l++) {
     deleteItem[l].addEventListener("click", function (event) {
       let btnSupprimer = event.target
+      console.log(btnSupprimer)
       produitStorage.splice(l, 1)
 
       localStorage.setItem("panier", JSON.stringify(produitStorage))
@@ -145,8 +149,15 @@ function suppProduit() {
 
       calculTotaleQuantity()
       calaculePrice()
+      if(getCart().length == 0){
+      
+        location.reload()
+      }
     })
   }
+  console.log(produitStorage)
+  console.log(getCart())
+
 }
 suppProduit()
 
@@ -167,6 +178,7 @@ function modifQuantity() {
       let produitStorage = getCart()
       produitStorage[q].quantity = parseInt(input.value);
       localStorage.setItem("panier", JSON.stringify(produitStorage));
+     
       calculTotaleQuantity()
       calaculePrice()
     })
@@ -249,25 +261,32 @@ email.addEventListener('change', function (e) {
 
 orderCommander.addEventListener(("click"), (e) => {
   e.preventDefault()
- 
-  //l'utilisateur doit rempli tous les champs obligatoires
-  if (firstName.value === "" || lastName.value === "" || address.value === "" || city.value === "" || email.value === "") {
   
+  //l'utilisateur doit rempli tous les champs obligatoires 
+ 
+ if(produitStorage[0][`quantity`] === 0){
+  alert("merci de choisir un quantité ")
+ 
+}else if (firstName.value === "" || lastName.value === "" || address.value === "" || city.value === "" || email.value === "") {
+     
     alert("merci de remplire vos coordonnées afin de poursuivre!");
     e.preventDefault();
-}else if(emailRegExp.test(email.value) == false
+  
+ } else if(emailRegExp.test(email.value) == false
  || nameRegExp.test(firstName.value) == false
  || adresseRegExp.test(address.value) == false 
-|| nameRegExp.test(lastName.value) == false
-|| nameRegExp.test(city.value) == false){
-  alert("merci de Vérifiez vos coordonnées pour passer la commande !");
-}else{
+ || nameRegExp.test(lastName.value) == false
+ || nameRegExp.test(city.value) == false){
+   alert("merci de Vérifiez vos coordonnées pour passer la commande !");
+   e.preventDefault()
+   
+  }
+  
+   else{
   envoieProducts()
 }
-
-
-
 })
+
 // si l'utilisateur est bien remplie tous les champs et tous ils sont valider confirmer la commande
 function envoieProducts(){ 
   let productId = []
@@ -301,7 +320,7 @@ fetch("http://localhost:3000/api/products/order", {
  
   .then((data) => {
     let orderId = data.orderId
-document.location.href = "/front/html/confirmation.html?orderId=" + `${data.orderId}` 
+//document.location.href = "/front/html/confirmation.html?orderId=" + `${data.orderId}` 
 localStorage.clear()
 
   })
