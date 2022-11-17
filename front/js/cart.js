@@ -181,6 +181,7 @@ function modifQuantity() {
      
       calculTotaleQuantity()
       calaculePrice()
+      location.reload()
     })
   }
 } modifQuantity()
@@ -265,7 +266,8 @@ orderCommander.addEventListener(("click"), (e) => {
   //l'utilisateur doit rempli tous les champs obligatoires 
  
  if(produitStorage[0][`quantity`] === 0){
-  alert("merci de choisir un quantité ")
+   alert("merci de choisir un quantité ") 
+   location.reload()
  
 }else if (firstName.value === "" || lastName.value === "" || address.value === "" || city.value === "" || email.value === "") {
      
@@ -320,7 +322,7 @@ fetch("http://localhost:3000/api/products/order", {
  
   .then((data) => {
     let orderId = data.orderId
-//document.location.href = "/front/html/confirmation.html?orderId=" + `${data.orderId}` 
+document.location.href = "/front/html/confirmation.html?orderId=" + `${data.orderId}` 
 localStorage.clear()
 
   })
