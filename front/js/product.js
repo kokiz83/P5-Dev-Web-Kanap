@@ -84,7 +84,7 @@ btn.addEventListener("click", (e) => {
     else {
         
          // Verifier si l'id de l'article selectionner est deja dans le panier
-       // Si avec la meme couleur en rajoute le quantité sinon en rajout un autr produit 
+       // Si avec la meme couleur en incrémente la quantité sinon en rajout un autre produit 
     let panier = [];
 			let produitStorage = JSON.parse(localStorage.getItem("panier"));
 			if (produitStorage != null) panier = panier.concat(produitStorage);

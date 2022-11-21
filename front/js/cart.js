@@ -149,9 +149,6 @@ function suppProduit() {
       }
     })
   }
-  console.log(produitStorage)
-  console.log(getCart())
-
 }
 suppProduit()
 
@@ -174,7 +171,7 @@ function modifQuantity() {
      
       calculTotaleQuantity()
       calaculePrice()
-      location.reload()
+     
     })
   }
 } modifQuantity()

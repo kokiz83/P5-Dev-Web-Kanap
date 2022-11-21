@@ -2,12 +2,10 @@
 fetch("http://localhost:3000/api/products")
     .then((res) => res.json())
     .then((data) => addProducts(data))
+    .catch(error => alert("Erreur : " + error));
+
 function addProducts(data) {
-    // const _id = data[0]._id
-    //const imageUrl = data[0].imageUrl
-    // const altTxt = data[0].altTxt
-    //const name =data[0].name
-    // const description = data[0].description
+    
     //Fonction pour crée et affichier tout les produit en utilusant la méthode forEach
     data.forEach(kanap => {
         "kanap", kanap
@@ -51,7 +49,3 @@ function addDesciption(description) {
 
     return p
 }
-
-
-
-
