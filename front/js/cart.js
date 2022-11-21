@@ -1,4 +1,4 @@
-
+//récupération du contenu du panier du localstorage
 function getCart() {
   let produitStorage = [];
   if (localStorage.getItem("panier") != null) {
@@ -7,13 +7,14 @@ function getCart() {
   return produitStorage
 }
 
+
 let produitStorage = getCart()
 let h1 = document.querySelector("h1")
 console.log(h1)
 let cartOrder = document.getElementsByClassName("cart__order")
 console.log(cartOrder[0])
 let cartPrice = document.getElementsByClassName("cart__price")
-// si panier vide 
+// si panier vide  
 if (produitStorage === null || produitStorage.length == 0) {
   h1.textContent = 'votre panier est vide'
   cartOrder[0].innerHTML = ""
@@ -21,15 +22,13 @@ if (produitStorage === null || produitStorage.length == 0) {
 } else{
 
 }
-
+//affichage des produits dans la pages panier (acev les prix en utilisont fetch)
 function creatCart() {
   let produitStorage = getCart()
   for (let i = 0; i < produitStorage.length; i++) {
-
     let color = produitStorage[i].color
     let id = produitStorage[i].id
     let quantity = produitStorage[i].quantity
-
     let section = document.querySelector("#cart__items")
     let produiselect = document.createElement("article")
     let divCartImg = document.createElement("div")
@@ -51,9 +50,7 @@ function creatCart() {
     divSettings.appendChild(divQuantity)
     divSettings.appendChild(divDelete)
 
-
-
-    //recupération du prix &name & image en utilisant l'id du produit
+    //insertion  du prix,nom et image en utilisant l'id du produit
     let produitApi = ""
     fetch("http://localhost:3000/api/products/" + id)
       .then(function (res) {
@@ -64,13 +61,14 @@ function creatCart() {
       .then(async function (dataApi) {
         produitApi = await dataApi
 
-        // insertion  price & name
+        // insertion  prix et nom et couleur de produit
         divDescription.innerHTML = `<h2>${produitApi.name} </h2> <p>${produitApi.price} €</p><p>${color}</p>`
         image.alt = produitApi.altTxt
         image.src = produitApi.imageUrl
       })
+      .catch(error => alert("Erreur : " + error));
 
-    // creé des classe 
+    // insertion  des classe pour les div 
     produiselect.dataset.id = id
     produiselect.dataset.color = color
     produiselect.classList.add("cart__item")
@@ -82,24 +80,22 @@ function creatCart() {
     divDelete.classList.add("cart__item__content__settings__delete")
 
 
-    //div Quantity
+    //insertion div Quantity
     divQuantity.innerHTML = `<p>Qté : </p><input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${quantity}"> `
 
-    // div Delet
+    // insertion div Delet
     divDelete.innerHTML = `<p class="deleteItem">Supprimer</p>`
   }
 }
 creatCart()
 
-///  récupèrer le prix de chaque produit pa rapport a son id
-
+//récupèrer le prix de chaque produit par rapport a son id
 async function getProductPrice(id) {
 
   const res = await fetch("http://localhost:3000/api/products/" + id)
   const dataPrice = await res.json()
   return dataPrice.price
 }
-
 
 // calculer le prix totale 
 async function calaculePrice() {
@@ -119,8 +115,7 @@ async function calaculePrice() {
 }
 calaculePrice()
 
-
-// calcule  totale quantity 
+// calcule le totale quantité 
 function calculTotaleQuantity() {
   let produitStorage = getCart()
   let qty = 0
@@ -143,7 +138,6 @@ function suppProduit() {
       let btnSupprimer = event.target
       console.log(btnSupprimer)
       produitStorage.splice(l, 1)
-
       localStorage.setItem("panier", JSON.stringify(produitStorage))
       btnSupprimer.closest("article").remove()
 
@@ -160,7 +154,6 @@ function suppProduit() {
 
 }
 suppProduit()
-
 
 // modifier la quantité de produit dans la page panier 
 function modifQuantity() {
@@ -185,12 +178,11 @@ function modifQuantity() {
     })
   }
 } modifQuantity()
+/**********************************************Fin panier*************************************************************************** */
 
+/*****************************************Validation formulaire***********************/
 
-/****************************formulaire***********************/
-// recuperer les valeurs du formulaire 
-// selectionner les valeurs de formulaire
-
+// Selectionner les valeurs de formulaire
 let form = document.getElementById("cart__order__form")
 let input = document.querySelector("input")
 let orderCommander = document.getElementById("order")
@@ -259,17 +251,19 @@ email.addEventListener('change', function (e) {
   }
 })
 
-
+//Passez la commande (ecoute le click de bouton commander)
 orderCommander.addEventListener(("click"), (e) => {
-  e.preventDefault()
+  e.preventDefault()  
   
-  //l'utilisateur doit rempli tous les champs obligatoires 
- 
- if(produitStorage[0][`quantity`] === 0){
-   alert("merci de choisir un quantité ") 
-   location.reload()
- 
-}else if (firstName.value === "" || lastName.value === "" || address.value === "" || city.value === "" || email.value === "") {
+  // L'utilisateure doit choisir la quantité
+  let totaleQuantity = document.querySelector("#totalQuantity")
+    if(totaleQuantity.textContent  == 0 || totaleQuantity.textContent > 100 ){
+   
+    alert("merci de choisir un quantité comprise entre 1 et 100 ") 
+    location.reload()}
+    
+    //l'utilisateur doit rempli tous les champs obligatoires 
+else if (firstName.value === "" || lastName.value === "" || address.value === "" || city.value === "" || email.value === "") {
      
     alert("merci de remplire vos coordonnées afin de poursuivre!");
     e.preventDefault();
@@ -283,13 +277,12 @@ orderCommander.addEventListener(("click"), (e) => {
    e.preventDefault()
    
   }
-  
    else{
   envoieProducts()
 }
 })
 
-// si l'utilisateur est bien remplie tous les champs et tous ils sont valider confirmer la commande
+// Si l'utilisateur est bien remplie tous les champs et tous ils sont valider confirmer la commande
 function envoieProducts(){ 
   let productId = []
 for (let p = 0; p < produitStorage.length; p++) {
@@ -310,6 +303,20 @@ let order = {
   products:productId
 }
 
+ /**
+   *
+   * Expects request to contain:
+ * contact: {
+ *   firstName: string,
+ *   lastName: string,
+ *   address: string,
+ *   city: string,
+ *   email: string
+ * }
+ * products: [string] <-- array of product _id
+ *
+ */
+
 fetch("http://localhost:3000/api/products/order", {
   method: "POST",
   headers: {
@@ -327,30 +334,3 @@ localStorage.clear()
 
   })
 }
-		
-  
-
-  
-
-  /**
-   *
-   * Expects request to contain:
- * contact: {
- *   firstName: string,
- *   lastName: string,
- *   address: string,
- *   city: string,
- *   email: string
- * }
- * products: [string] <-- array of product _id
- *
- */
-
-
-
-
-
-
-
-
-

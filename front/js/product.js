@@ -1,12 +1,15 @@
-// récupération de l'url avec id
+// Récupération de l'url avec id de produit
 const queryString = window.location.href
 const url = new URL(queryString)
 const id = url.searchParams.get("id")
-// récuperer les produits avec leur identité id avec la méthode Get
+
+// Appel API avec l'id du produit on utilisant la méthode Get
 fetch(`http://localhost:3000/api/products/${id}`)
 .then(response => response.json())
 .then(res => addProducts(res))
-// afichier les produits
+.catch(error => alert("Erreur : " + error));
+
+// Affichier les produits
 function addProducts(res) {
     const { id, price, name, description, colors, imageUrl, altTxt } = res
     console.log(res)
@@ -17,6 +20,7 @@ function addProducts(res) {
     addColors(colors)
     ajoutProduit(btn)   
 }
+//Insertion image du produit
 function addImg(imageUrl, altTxt) {
     const item = document.querySelector(".item__img")
     const img = document.createElement("img")
@@ -24,21 +28,24 @@ function addImg(imageUrl, altTxt) {
     img.alt = altTxt
     item.appendChild(img)
 }
+//Insertion du nom de produit
 function addtiTle(name) {
     const title = document.querySelector("h1")
     title.textContent = name
 }
+//Insertion du description 
 function addDesciption(description) {
     const p = document.getElementById("description")
     p.textContent = description
 }
+//Insertion du prix
 function addPrice(price) {
     const span = document.querySelector("span")
     span.textContent = price
 }
 
 
-// fonction pour choisir les color
+// Fonction pour inseré les couleurs de choix
 function addColors(colors) {
     const s = document.querySelector("select")
     const option1 = new Option(colors[0], colors[0])
@@ -51,30 +58,33 @@ function addColors(colors) {
 
 
 
-//------------------------parti recupuration de produit choisi par l'utilisateur----------
-//----------------------------------------------------------------------------------------
-// selectionner le bouton // pour envoyer le produit  dans le panier
+//------------------------Parti "recupuration de produit choisi par l'utilisateur"-------------------/
+
+// Selectionner le bouton 
 let btn = document.getElementById("addToCart")
+
+// Ecoute de click sur le bouton d'ajoute au panier 
 function ajoutProduit(btn)
 {
 btn.addEventListener("click", (e) => {
     const color = document.querySelector("#colors").value
     const quantity = document.querySelector("#quantity").value
-    // constante de produit à récupérer dans le localstorage
+    // Constante de produit choisi à récupérer dans le localstorage
     const produitData = { 
         id: id,
         color: color,
         quantity: +quantity,
     }
-    // vérifier si les champs de color et quantité et remplie
+    // Vérifier si les champs de color et quantité et remplie
     if (color == null || color === "" || quantity == null || quantity == 0 || quantity >= 100) {
         alert("'Merci de choisir une couleur ET  une quantité comprise entre 1 et 100'")
 
     }
+    
     else {
         
-         // verifier si l'id de l'article selectionner est deja dans le panier
-       // si avec la meme couleur en rajoute le quantité sinon en rajout un autr produit 
+         // Verifier si l'id de l'article selectionner est deja dans le panier
+       // Si avec la meme couleur en rajoute le quantité sinon en rajout un autr produit 
     let panier = [];
 			let produitStorage = JSON.parse(localStorage.getItem("panier"));
 			if (produitStorage != null) panier = panier.concat(produitStorage);
@@ -87,7 +97,7 @@ btn.addEventListener("click", (e) => {
                     );
                 });
 
-			// envoyer l'article dans le localstorage
+			// Ajouter  l'article dans le localstorage
 			if (position == -1) {
 				panier.push(produitData);
 			} else {
@@ -96,7 +106,7 @@ btn.addEventListener("click", (e) => {
 			}
 			localStorage.setItem("panier", JSON.stringify(panier));
 		
-             //    envoyer vers pannier
+             //    Envoyer vers la page pannier
         window.location.href = "/front/html/cart.html"   
         } 
         

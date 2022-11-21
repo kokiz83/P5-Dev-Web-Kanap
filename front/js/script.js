@@ -1,4 +1,4 @@
-// récupérer les produit depuis l'api avec fetch
+// Récupérer les produit depuis l'api avec fetch
 fetch("http://localhost:3000/api/products")
     .then((res) => res.json())
     .then((data) => addProducts(data))
@@ -8,7 +8,7 @@ function addProducts(data) {
     // const altTxt = data[0].altTxt
     //const name =data[0].name
     // const description = data[0].description
-    //fonction pour crée et afichier tout les produit en utilusant la méthode forEach
+    //Fonction pour crée et affichier tout les produit en utilusant la méthode forEach
     data.forEach(kanap => {
         "kanap", kanap
         const { _id, imageUrl, altTxt, name, description } = kanap
@@ -27,7 +27,7 @@ function addProducts(data) {
         article.appendChild(p)
     });
 }
-// afichier l'image
+// Affichier l'image
 function addImg(imageUrl, altTxt) {
     const image = document.createElement("img")
     image.src = imageUrl
@@ -35,7 +35,7 @@ function addImg(imageUrl, altTxt) {
     return image
 }
 
-// afichier le nom de produit
+// Affichier le nom de produit
 function addTitele(name) {
     const h3 = document.createElement("h3")
     h3.textContent = name
@@ -43,7 +43,7 @@ function addTitele(name) {
     return h3
 }
 
-// afichier le description 
+// Affichier la description 
 function addDesciption(description) {
     const p = document.createElement("p")
     p.textContent = description
