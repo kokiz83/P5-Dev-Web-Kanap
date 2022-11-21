@@ -5,7 +5,7 @@ fetch("http://localhost:3000/api/products")
     .catch(error => alert("Erreur : " + error));
 
 function addProducts(data) {
-    
+
     //Fonction pour crée et affichier tout les produit en utilusant la méthode forEach
     data.forEach(kanap => {
         "kanap", kanap

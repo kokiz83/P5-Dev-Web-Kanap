@@ -19,7 +19,7 @@ if (produitStorage === null || produitStorage.length == 0) {
   h1.textContent = 'votre panier est vide'
   cartOrder[0].innerHTML = ""
   cartPrice[0].innerHTML = ""
-} else{
+} else {
 
 }
 //affichage des produits dans la pages panier (acev les prix en utilisont fetch)
@@ -103,7 +103,7 @@ async function calaculePrice() {
   console.log(produitStorage)
   let totalePrice = 0
 
-  for (let i = 0; i<produitStorage.length; i++) {
+  for (let i = 0; i < produitStorage.length; i++) {
     let produit = produitStorage[i]
     let id = produitStorage[i]?.id
     const infoPrice = await getProductPrice(id)
@@ -121,11 +121,11 @@ function calculTotaleQuantity() {
   let qty = 0
   for (let i = 0; i < produitStorage.length; i++) {
     let quantity = produitStorage[i].quantity
-    qty += +quantity 
+    qty += +quantity
   }
   let totaleQuantity = document.querySelector("#totalQuantity")
   totaleQuantity.textContent = qty
-} 
+}
 calculTotaleQuantity()
 
 // pour pouvoir supprimer l'article du panier et ajuster le prix
@@ -143,8 +143,8 @@ function suppProduit() {
 
       calculTotaleQuantity()
       calaculePrice()
-      if(getCart().length == 0){
-      
+      if (getCart().length == 0) {
+
         location.reload()
       }
     })
@@ -168,10 +168,10 @@ function modifQuantity() {
       let produitStorage = getCart()
       produitStorage[q].quantity = parseInt(input.value);
       localStorage.setItem("panier", JSON.stringify(produitStorage));
-     
+
       calculTotaleQuantity()
       calaculePrice()
-     
+
     })
   }
 } modifQuantity()
@@ -250,84 +250,85 @@ email.addEventListener('change', function (e) {
 
 //Passez la commande (ecoute le click de bouton commander)
 orderCommander.addEventListener(("click"), (e) => {
-  e.preventDefault()  
-  
+  e.preventDefault()
+
   // L'utilisateure doit choisir la quantité
   let totaleQuantity = document.querySelector("#totalQuantity")
-    if(totaleQuantity.textContent  == 0 || totaleQuantity.textContent > 100 ){
-   
-    alert("merci de choisir un quantité comprise entre 1 et 100 ") 
-    location.reload()}
-    
-    //l'utilisateur doit rempli tous les champs obligatoires 
-else if (firstName.value === "" || lastName.value === "" || address.value === "" || city.value === "" || email.value === "") {
-     
+  if (totaleQuantity.textContent == 0 || totaleQuantity.textContent > 100) {
+
+    alert("merci de choisir un quantité comprise entre 1 et 100 ")
+    location.reload()
+  }
+
+  //l'utilisateur doit rempli tous les champs obligatoires 
+  else if (firstName.value === "" || lastName.value === "" || address.value === "" || city.value === "" || email.value === "") {
+
     alert("merci de remplire vos coordonnées afin de poursuivre!");
     e.preventDefault();
-  
- } else if(emailRegExp.test(email.value) == false
- || nameRegExp.test(firstName.value) == false
- || adresseRegExp.test(address.value) == false 
- || nameRegExp.test(lastName.value) == false
- || nameRegExp.test(city.value) == false){
-   alert("merci de Vérifiez vos coordonnées pour passer la commande !");
-   e.preventDefault()
-   
+
+  } else if (emailRegExp.test(email.value) == false
+    || nameRegExp.test(firstName.value) == false
+    || adresseRegExp.test(address.value) == false
+    || nameRegExp.test(lastName.value) == false
+    || nameRegExp.test(city.value) == false) {
+    alert("merci de Vérifiez vos coordonnées pour passer la commande !");
+    e.preventDefault()
+
   }
-   else{
-  envoieProducts()
-}
+  else {
+    envoieProducts()
+  }
 })
 
 // Si l'utilisateur est bien remplie tous les champs et tous ils sont valider confirmer la commande
-function envoieProducts(){ 
+function envoieProducts() {
   let productId = []
-for (let p = 0; p < produitStorage.length; p++) {
-  productId.push(produitStorage[p].id)
-}
-let contact = {
-  firstName: firstName.value,
-  lastName: lastName.value,
-  address: address.value,
-  city: city.value,
-  email: email.value
-}
-console.log(typeof(contact))
-localStorage.setItem("contact", JSON.stringify(contact));
-localStorage.setItem("productId", JSON.stringify(productId))
-let order = {
-  contact,
-  products:productId
-}
+  for (let p = 0; p < produitStorage.length; p++) {
+    productId.push(produitStorage[p].id)
+  }
+  let contact = {
+    firstName: firstName.value,
+    lastName: lastName.value,
+    address: address.value,
+    city: city.value,
+    email: email.value
+  }
+  console.log(typeof (contact))
+  localStorage.setItem("contact", JSON.stringify(contact));
+  localStorage.setItem("productId", JSON.stringify(productId))
+  let order = {
+    contact,
+    products: productId
+  }
 
- /**
-   *
-   * Expects request to contain:
- * contact: {
- *   firstName: string,
- *   lastName: string,
- *   address: string,
- *   city: string,
- *   email: string
- * }
- * products: [string] <-- array of product _id
- *
- */
+  /**
+    *
+    * Expects request to contain:
+  * contact: {
+  *   firstName: string,
+  *   lastName: string,
+  *   address: string,
+  *   city: string,
+  *   email: string
+  * }
+  * products: [string] <-- array of product _id
+  *
+  */
 
-fetch("http://localhost:3000/api/products/order", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-  },
-  body: JSON.stringify(order)
-})
-  .then((response) => response.json())
- 
-  .then((data) => {
-    let orderId = data.orderId
-document.location.href = "/front/html/confirmation.html?orderId=" + `${data.orderId}` 
-localStorage.clear()
-
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify(order)
   })
+    .then((response) => response.json())
+
+    .then((data) => {
+      let orderId = data.orderId
+      document.location.href = "/front/html/confirmation.html?orderId=" + `${data.orderId}`
+      localStorage.clear()
+
+    })
 }
