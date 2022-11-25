@@ -47,5 +47,7 @@ function addDesciption(description) {
     p.textContent = description
     p.classList.add("productDescription")
 
+
+    
     return p
 }

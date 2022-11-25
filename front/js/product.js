@@ -79,7 +79,7 @@ function ajoutProduit(btn) {
             return alert("Merci de choisir une couleur")
         }
 
-        if (quantity == null || quantity == 0 || quantity >= 100) {
+        if (quantity == null || quantity <= 0 || quantity >= 100) {
             return alert("Merci de choisir une quantité comprise entre 1 et 100")
         }
 

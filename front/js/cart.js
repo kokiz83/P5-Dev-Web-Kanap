@@ -254,14 +254,18 @@ orderCommander.addEventListener(("click"), (e) => {
 
   // L'utilisateure doit choisir la quantité
   let totaleQuantity = document.querySelector("#totalQuantity")
-  if (totaleQuantity.textContent == 0 || totaleQuantity.textContent > 100) {
+  if (totaleQuantity.textContent <= 0 || totaleQuantity.textContent > 100) {
 
     alert("merci de choisir un quantité comprise entre 1 et 100 ")
     location.reload()
   }
 
   //l'utilisateur doit rempli tous les champs obligatoires 
-  else if (firstName.value === "" || lastName.value === "" || address.value === "" || city.value === "" || email.value === "") {
+  else if (firstName.value === "" 
+  || lastName.value === "" 
+  || address.value === "" 
+  || city.value === "" 
+  || email.value === "") {
 
     alert("merci de remplire vos coordonnées afin de poursuivre!");
     e.preventDefault();
@@ -301,20 +305,6 @@ function envoieProducts() {
     products: productId
   }
 
-  /**
-    *
-    * Expects request to contain:
-  * contact: {
-  *   firstName: string,
-  *   lastName: string,
-  *   address: string,
-  *   city: string,
-  *   email: string
-  * }
-  * products: [string] <-- array of product _id
-  *
-  */
-
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     headers: {
@@ -332,3 +322,16 @@ function envoieProducts() {
 
     })
 }
+  /**
+    *
+    * Expects request to contain:
+  * contact: {
+  *   firstName: string,
+  *   lastName: string,
+  *   address: string,
+  *   city: string,
+  *   email: string
+  * }
+  * products: [string] <-- array of product _id
+  *
+  */
